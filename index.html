@@ -81,6 +81,7 @@ button{border:0;border-radius:10px;padding:10px 14px;background:var(--accent);co
 </section>
 
 <section id="data" class="hidden">
+<div class="card"><h2>Apple Health</h2><p class="small">Импортируются только даты менструаций из подготовленного файла Apple Health. Файл обрабатывается внутри приложения; данные не загружаются на сервер.</p><button onclick="document.getElementById('healthFile').click()">Импортировать Apple Health</button><input id="healthFile" type="file" accept="application/json,.json" hidden onchange="importAppleHealth(event)"><div id="healthStatus" class="small" style="margin-top:10px"></div></div>
 <div class="card"><h2>Резервная копия</h2><p class="small">Экспорт сохраняет историю циклов и дневник симптомов в файл на твоём устройстве.</p><button onclick="exportData()">Экспортировать данные</button>
 <label class="secondary" style="display:inline-block;padding:10px 14px;border-radius:10px;cursor:pointer;margin-left:8px">Импортировать данные<input type="file" accept=".json,application/json" hidden onchange="importData(event)"></label></div>
 <div class="card"><h2>Приватность</h2><p class="small">Данные хранятся локально в этом браузере/PWA и не отправляются приложением на сервер.</p><button class="dangerbtn" onclick="clearAll()">Удалить все данные</button></div>
@@ -89,7 +90,8 @@ button{border:0;border-radius:10px;padding:10px 14px;background:var(--accent);co
 
 <script>
 const K='cycleTracker_v2';
-let state=JSON.parse(localStorage.getItem(K)||'{"periods":[],"days":{}}');
+let state=JSON.parse(localStorage.getItem(K)||'{"periods":[],"days":{},"periodEnds":{}}');
+state.periods=Array.isArray(state.periods)?state.periods:[]; state.days=state.days||{}; state.periodEnds=state.periodEnds||{};
 let selected={flow:null,mood:null,breast:null,pain:null,appetite:null,sleep:null,discharge:null};
 let calCursor=new Date(); calCursor.setDate(1);
 
@@ -217,8 +219,8 @@ function symptoms(){
   $('symptomSummary').innerHTML=h||'<div class="muted">Пока нет записей о симптомах.</div>';
 }
 function flowSummary(){
-  let vals=Object.values(state.days).map(x=>Number(x.flow)).filter(x=>Number.isFinite(x)&&x>=0);
-  $('flowSummary').innerHTML=vals.length?'<div class="metrics"><div class="metric"><span class="muted">Дней отмечено</span><b>'+vals.length+'</b></div><div class="metric"><span class="muted">Средняя интенсивность</span><b>'+((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1))+' / 4</b></div></div>':'<div class="muted">Нет записей.</div>';
+  let vals=Object.values(state.days).map(x=>Number(x.flow)).filter(x=>Number.isFinite(x)&&x>=0); let imported=Object.entries(state.periodEnds).filter(([s,e])=>e&&e>=s).map(([s,e])=>days(date(s),date(e))+1);
+  $('flowSummary').innerHTML=vals.length?'<div class="metrics"><div class="metric"><span class="muted">Дней отмечено вручную</span><b>'+vals.length+'</b></div><div class="metric"><span class="muted">Средняя интенсивность</span><b>'+((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1))+' / 4</b></div></div>'+(imported.length?'<p>Из Apple Health: '+imported.length+' менструальных эпизодов, средняя длительность '+(imported.reduce((a,b)=>a+b,0)/imported.length).toFixed(1)+' дн.</p>':''):(imported.length?'<p>Из Apple Health: '+imported.length+' менструальных эпизодов, средняя длительность '+(imported.reduce((a,b)=>a+b,0)/imported.length).toFixed(1)+' дн.</p>':'<div class="muted">Нет записей.</div>');
 }
 function phaseSummary(){
   let p=sortedPeriods(),av=avg(lengths()),buckets=[0,0,0,0],labels=['месячные','фолликулярная фаза','фертильное окно','PMS'];
@@ -240,7 +242,7 @@ function calendar(){
   for(let n=1;n<=last.getDate();n++){
     let d=new Date(y,m,n),s=iso(d),cd=cycleDayFor(d),cls='cal-day';
     if(state.days[s])cls+=' logged';
-    if(p.includes(s)|| (cd&&cd<=5))cls+=' period';
+    let ps=p.find(x=>x===s), inBleeding=!!ps; if(!inBleeding){for(const st of p){const en=state.periodEnds[st]; if(en && s>=st && s<=en){inBleeding=true;break}}} if(inBleeding)cls+=' period';
     else if(cd&&cd>=Math.max(1,av-6)&&cd<av)cls+=' pms';
     else if(cd&&cd>=Math.max(1,av-19)&&cd<=av-13)cls+=' ov';
     if(s===today)cls+=' today';
@@ -251,7 +253,7 @@ function calendar(){
 function changeMonth(n){calCursor.setMonth(calCursor.getMonth()+n);calendar()}
 function exportData(){
   try{
-    const payload={app:"Мой цикл",version:6,exportedAt:new Date().toISOString(),data:state};
+    const payload={app:"Мой цикл",version:7,exportedAt:new Date().toISOString(),data:state};
     const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json;charset=utf-8"});
     const url=URL.createObjectURL(blob),a=document.createElement("a");
     a.href=url;a.download="my-cycle-backup-"+new Date().toISOString().slice(0,10)+".json";
@@ -265,13 +267,23 @@ function importData(ev){
   r.onload=()=>{
     try{
       const payload=JSON.parse(r.result),incoming=payload.data||payload;
-      if(!Array.isArray(incoming.periods)||typeof incoming.days!=="object")throw 0;
+      if(!Array.isArray(incoming.periods)||typeof incoming.days!=="object")throw 0; incoming.periodEnds=incoming.periodEnds||{};
       if(confirm("Заменить текущие данные данными из резервной копии?")){state=incoming;save();render();showToast('Данные восстановлены')}
     }catch(e){alert("Не удалось прочитать резервную копию.")}
     ev.target.value="";
   };r.readAsText(file);
 }
-function clearAll(){if(confirm('Удалить всю историю и симптомы?')){state={periods:[],days:{}};save();render();showToast('Данные удалены')}}
+function importAppleHealth(ev){
+  const file=ev.target.files&&ev.target.files[0]; if(!file)return;
+  const r=new FileReader();
+  r.onload=()=>{try{
+    const payload=JSON.parse(r.result); if(payload.format!=='my-cycle-apple-health-v1'||!Array.isArray(payload.periods))throw 0;
+    let added=0; state.periodEnds=state.periodEnds||{};
+    for(const x of payload.periods){if(!x.start)continue; if(!state.periods.includes(x.start)){state.periods.push(x.start);added++} if(x.end)state.periodEnds[x.start]=x.end;}
+    state.periods.sort(); save(); render(); $('healthStatus').textContent='Импортировано: '+added+' новых периодов. Всего в истории: '+state.periods.length+'.'; showToast('Apple Health импортирован');
+  }catch(e){$('healthStatus').textContent='Не удалось прочитать файл Apple Health.'} ev.target.value='';}; r.readAsText(file);
+}
+function clearAll(){if(confirm('Удалить всю историю и симптомы?')){state={periods:[],days:{},periodEnds:{}};save();render();showToast('Данные удалены')}}
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"));
 render();
 </script></body></html>
