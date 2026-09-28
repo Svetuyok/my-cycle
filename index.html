@@ -17,7 +17,7 @@ label{display:block;font-weight:600;margin:10px 0 6px}input,select,button,textar
 </head>
 <body><main>
 <header><h1>Мой цикл</h1><div class="sub">Личный трекер. Данные хранятся только на этом устройстве.</div></header>
-<nav><button class="active" onclick="tab('today',this)">Сегодня</button><button onclick="tab('log',this)">Запись</button><button onclick="tab('stats',this)">Статистика</button><button onclick="tab('history',this)">История</button></nav>
+<nav><button class="active" onclick="tab('today',this)">Сегодня</button><button onclick="tab('log',this)">Запись</button><button onclick="tab('stats',this)">Статистика</button><button onclick="tab('history',this)">История</button><button onclick="tab('data',this)">Данные</button></nav>
 
 <section id="today">
 <div class="card hero"><div class="muted">Следующие месячные</div><div class="big" id="next">—</div><div id="nextInfo" class="pill">Добавьте дату последнего начала</div></div>
@@ -54,6 +54,22 @@ label{display:block;font-weight:600;margin:10px 0 6px}input,select,button,textar
     </label><br>
     <button class="dangerbtn" onclick="clearAll()">Удалить все данные</button></div>
 </section>
+
+<section id="data" class="hidden">
+<div class="card">
+<h2>Резервная копия</h2>
+<p class="small">Экспорт сохраняет историю циклов и дневник симптомов в файл на твоём устройстве. Перед удалением приложения или очисткой данных сделай резервную копию.</p>
+<button onclick="exportData()">Экспортировать данные</button>
+<label class="secondary" style="display:inline-block;padding:11px 15px;border-radius:11px;cursor:pointer;margin-top:14px">Импортировать данные
+<input id="importFile" type="file" accept=".json,application/json" hidden onchange="importData(event)">
+</label>
+</div>
+<div class="card">
+<h2>Приватность</h2>
+<p class="small">История хранится локально в браузере/PWA на этом устройстве и не отправляется на сервер приложения.</p>
+<button class="dangerbtn" onclick="clearAll()">Удалить все данные</button>
+</div>
+</section>
 </main>
 <script>
 const K='cycleTracker_v2';let state=JSON.parse(localStorage.getItem(K)||'{"periods":[],"days":{}}');let selected={flow:null,mood:null,breast:null,pain:null,appetite:null,sleep:null,discharge:null};
@@ -65,9 +81,18 @@ function cycleFor(d){let p=[...state.periods].sort().filter(x=>date(x)<=d);retur
 function selectGroup(id){$(id).querySelectorAll('.chip').forEach(c=>c.onclick=()=>{$(id).querySelectorAll('.chip').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');selected[id]={value:c.dataset.v}})}
 ['flow','mood','breast','pain','appetite','sleep','discharge'].forEach(selectGroup);
 $('logDate').valueAsDate=new Date();
-function saveDay(){let d=$('logDate').value;if(!d)return;let rec={};for(const k in selected)rec[k]=selected[k]?.value??null;rec.note=$('note').value;state.days[d]=rec;save();render();alert('День сохранён.')}
+function saveDay(){
+      let d=$('logDate').value;if(!d)return;
+      let rec={};
+      for(const k in selected)rec[k]=selected[k]?.value??null;
+      rec.note=$('note').value;
+      state.days[d]=rec;save();render();
+      alert('Запись сохранена');
+      const btn=document.querySelector('nav button');
+      if(btn)tab('today',btn);
+    };for(const k in selected)rec[k]=selected[k]?.value??null;rec.note=$('note').value;state.days[d]=rec;save();render();alert('День сохранён.')}
 function savePeriod(){let d=$('logDate').value;if(!d)return;if(!state.periods.includes(d))state.periods.push(d);state.periods.sort();save();render();alert('Начало месячных сохранено.')}
-function tab(id,btn){['today','log','stats','history'].forEach(x=>$(x).classList.add('hidden'));$(id).classList.remove('hidden');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');render()}
+function tab(id,btn){['today','log','stats','history','data'].forEach(x=>$(x).classList.add('hidden'));$(id).classList.remove('hidden');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');render()}
 function render(){let p=[...state.periods].sort(), ls=lengths(), av=avg(ls), today=new Date();today.setHours(12,0,0,0),last=cycleFor(today);
 $('avg').textContent=ls.length?av+' дн.':'—';$('cycleDay').textContent=last?(days(date(last),today)+1)+'':'—';
 if(last){let next=new Date(date(last));next.setDate(next.getDate()+av);let diff=days(today,next);$('next').textContent=fmt(next);$('nextInfo').textContent=diff>0?'примерно через '+diff+' дн.':diff===0?'ожидаются сегодня':'задержка около '+Math.abs(diff)+' дн.';
@@ -80,6 +105,43 @@ function charts(ls){let a=ls.slice(-12),max=Math.max(...a,30);$('lengthChart').i
 function flowSummary(){let vals=Object.values(state.days).map(x=>Number(x.flow)).filter(x=>x>=0);$('flowSummary').innerHTML=vals.length?`Записано дней кровотечения: <b>${vals.length}</b>. Средняя интенсивность: <b>${(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1)}</b> из 4.`:'Нет записей.'}
 function symptoms(){let ds=Object.values(state.days),names={mood:'настроение',breast:'грудь',pain:'боли',appetite:'аппетит',sleep:'сон',discharge:'выделения'},h='';for(const [k,n] of Object.entries(names)){let nrec=ds.filter(x=>x[k]!==null&&x[k]!==undefined);if(nrec.length)h+=`<p><b>${n}</b>: ${nrec.length} записей</p>`}$('symptomSummary').innerHTML=h||'<div class="muted">Пока нет записей о симптомах.</div>'}
 function history(){let p=[...state.periods].sort(),ls=lengths();if(!p.length){$('historyBox').innerHTML='<div class="muted">История пуста.</div>';return}let rows=p.map((x,i)=>`<tr><td>${fmt(date(x))}</td><td>${i?ls[i-1]+' дн.':'—'}</td></tr>`).join('');$('historyBox').innerHTML='<table class="history"><tr><th>Начало</th><th>Длина цикла</th></tr>'+rows+'</table>'}
+
+function exportData(){
+  try{
+    const payload={
+      app:"Мой цикл",
+      version:3,
+      exportedAt:new Date().toISOString(),
+      data:state
+    };
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download="my-cycle-backup-"+new Date().toISOString().slice(0,10)+".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }catch(e){alert("Не удалось создать резервную копию.");}
+}
+function importData(ev){
+  const file=ev.target.files && ev.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const payload=JSON.parse(reader.result);
+      const incoming=payload.data||payload;
+      if(!Array.isArray(incoming.periods)||typeof incoming.days!=="object")throw new Error("invalid");
+      if(confirm("Заменить текущие данные данными из резервной копии?")){
+        state=incoming;save();render();alert("Данные восстановлены");
+      }
+    }catch(e){alert("Не удалось прочитать резервную копию.");}
+    ev.target.value="";
+  };
+  reader.readAsText(file);
+}
 function clearAll(){if(confirm('Удалить всю историю и симптомы?')){state={periods:[],days:{}};save();render()}}
 render();
 </script></body></html>
