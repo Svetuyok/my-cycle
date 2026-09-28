@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#b85c7a"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Мой цикл"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><title>Мой цикл</title>
+<style>
+:root{--bg:#f7f5f2;--card:#fff;--ink:#252321;--muted:#77716b;--accent:#b85c7a;--soft:#f4dfe7;--line:#e8e2dc;--warn:#a56b31;--bad:#a94b4b;--good:#4f7659}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:900px;margin:auto;padding:24px 16px 60px}h1{font-size:30px;margin:0}h2{font-size:19px;margin:0 0 14px}.sub,.muted,.small{color:var(--muted)}.sub{margin:3px 0 20px}
+nav{display:flex;gap:7px;overflow:auto;margin-bottom:16px}nav button{white-space:nowrap;background:#eee9e5;color:var(--ink);margin:0}nav button.active{background:var(--accent);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:17px;margin-bottom:14px}.hero{background:linear-gradient(135deg,#f4dfe7,#fff);border:0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.big{font-size:26px;font-weight:750}.pill{display:inline-block;padding:6px 10px;border-radius:99px;background:var(--soft);font-size:13px;margin-top:7px}
+label{display:block;font-weight:600;margin:10px 0 6px}input,select,button,textarea{font:inherit}input[type=date],input[type=number],select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}button{border:0;border-radius:10px;padding:10px 14px;background:var(--accent);color:#fff;font-weight:650;cursor:pointer;margin-top:10px}.secondary{background:#eee9e5;color:var(--ink)}.dangerbtn{background:#eee;color:var(--bad)}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.chips{display:flex;gap:7px;flex-wrap:wrap}.chip{border:1px solid var(--line);padding:8px 10px;border-radius:12px;background:#fff;cursor:pointer}.chip.sel{background:var(--soft);border-color:#dca5b8}
+.alert{padding:12px;border-radius:12px;background:#fff1dd;margin-top:10px}.bad{background:#fae4e4}.good{background:#e7f1e9}.notice{background:#f0edf8}.timeline{display:flex;gap:4px;margin:13px 0}.day{height:28px;flex:1;border-radius:7px;background:#eee}.period{background:#d9829e}.pms{background:#e8c5d2}.ov{background:#c9dcae}.today{outline:2px solid var(--ink);outline-offset:1px}
+.chart{height:190px;display:flex;align-items:end;gap:7px;border-bottom:1px solid var(--line);padding:8px 2px 0}.barwrap{flex:1;height:100%;display:flex;flex-direction:column;justify-content:end;align-items:center}.bar{width:75%;max-width:34px;border-radius:7px 7px 0 0;background:var(--accent);min-height:3px}.barlabel{font-size:10px;color:var(--muted);margin-top:5px}.barval{font-size:10px;margin-bottom:3px}.hidden{display:none}.history{width:100%;border-collapse:collapse}.history td,.history th{text-align:left;padding:8px;border-bottom:1px solid var(--line);font-size:13px}
+@media(max-width:680px){.grid{grid-template-columns:1fr 1fr}.grid .card:last-child{grid-column:1/-1}main{padding:18px 12px 50px}.chart{height:160px}}
+</style>
+</head>
+<body><main>
+<header><h1>Мой цикл</h1><div class="sub">Личный трекер. Данные хранятся только на этом устройстве.</div></header>
+<nav><button class="active" onclick="tab('today',this)">Сегодня</button><button onclick="tab('log',this)">Запись</button><button onclick="tab('stats',this)">Статистика</button><button onclick="tab('history',this)">История</button></nav>
+
+<section id="today">
+<div class="card hero"><div class="muted">Следующие месячные</div><div class="big" id="next">—</div><div id="nextInfo" class="pill">Добавьте дату последнего начала</div></div>
+<div class="grid"><div class="card"><div class="muted">День цикла</div><div class="big" id="cycleDay">—</div></div><div class="card"><div class="muted">Средняя длина</div><div class="big" id="avg">—</div></div><div class="card"><div class="muted">Овуляторное окно</div><div class="big" id="ovulation">—</div></div></div>
+<div class="card"><h2>Текущий цикл</h2><div id="status"></div><div class="timeline" id="timeline"></div></div>
+<div class="card"><h2>Сигналы</h2><div id="signals"></div></div>
+</section>
+
+<section id="log" class="hidden">
+<div class="card"><h2>Добавить день</h2><label>Дата</label><input id="logDate" type="date"><label>Кровотечение</label><div class="chips" id="flow"><span class="chip" data-v="0">Нет</span><span class="chip" data-v="1">Лёгкое</span><span class="chip" data-v="2">Среднее</span><span class="chip" data-v="3">Сильное</span><span class="chip" data-v="4">Очень сильное</span></div>
+<label>Настроение</label><div class="chips" id="mood"><span class="chip" data-v="1">Плохое</span><span class="chip" data-v="2">Ниже обычного</span><span class="chip" data-v="3">Обычное</span><span class="chip" data-v="4">Хорошее</span><span class="chip" data-v="5">Отличное</span></div>
+<label>Грудь</label><div class="chips" id="breast"><span class="chip" data-v="0">Нет</span><span class="chip" data-v="1">Чувствительность</span><span class="chip" data-v="2">Боль</span></div>
+<label>Боли</label><div class="chips" id="pain"><span class="chip" data-v="0">Нет</span><span class="chip" data-v="1">Слабые</span><span class="chip" data-v="2">Средние</span><span class="chip" data-v="3">Сильные</span></div>
+<label>Аппетит</label><div class="chips" id="appetite"><span class="chip" data-v="1">Меньше</span><span class="chip" data-v="2">Обычный</span><span class="chip" data-v="3">Больше</span></div>
+<label>Сон</label><div class="chips" id="sleep"><span class="chip" data-v="1">Плохой</span><span class="chip" data-v="2">Обычный</span><span class="chip" data-v="3">Лучше обычного</span></div>
+<label>Выделения</label><div class="chips" id="discharge"><span class="chip" data-v="0">Нет особенностей</span><span class="chip" data-v="1">Сухо</span><span class="chip" data-v="2">Кремовые</span><span class="chip" data-v="3">Прозрачные/скользкие</span><span class="chip" data-v="4">Другие</span></div>
+<label>Комментарий</label><textarea id="note" rows="3" placeholder="Например: сильная усталость, тяга к сладкому..."></textarea>
+<div class="row"><button onclick="saveDay()">Сохранить день</button><button class="secondary" onclick="savePeriod()">Отметить первый день месячных</button></div>
+</div>
+</section>
+
+<section id="stats" class="hidden">
+<div class="card"><h2>Длина циклов — последние 12</h2><div id="lengthChart" class="chart"></div><div class="small">График строится по фактически внесённым датам начала месячных.</div></div>
+<div class="card"><h2>Кровотечение</h2><div id="flowSummary"></div></div>
+<div class="card"><h2>Паттерны симптомов</h2><div id="symptomSummary"></div></div>
+</section>
+
+<section id="history" class="hidden">
+<div class="card"><h2>История циклов</h2><div id="historyBox"></div><h2 style="margin-top:24px">Резервная копия</h2>
+    <p class="small">Экспортируйте историю перед очисткой Safari, удалением приложения или сменой телефона.</p>
+    <button onclick="exportData()">Экспортировать данные</button>
+    <label class="secondary" style="display:inline-block;padding:11px 15px;border-radius:11px;cursor:pointer;margin-top:14px">Импортировать
+      <input type="file" accept=".json,application/json" hidden onchange="importData(event)">
+    </label><br>
+    <button class="dangerbtn" onclick="clearAll()">Удалить все данные</button></div>
+</section>
+</main>
+<script>
+const K='cycleTracker_v2';let state=JSON.parse(localStorage.getItem(K)||'{"periods":[],"days":{}}');let selected={flow:null,mood:null,breast:null,pain:null,appetite:null,sleep:null,discharge:null};
+const $=id=>document.getElementById(id);function save(){localStorage.setItem(K,JSON.stringify(state))}
+function date(s){return new Date(s+'T12:00:00')}function iso(d){return d.toISOString().slice(0,10)}function days(a,b){return Math.round((b-a)/86400000)}function fmt(d){return d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}
+function avg(a){return a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):28}
+function lengths(){let p=[...state.periods].sort();return p.slice(1).map((x,i)=>days(date(p[i]),date(x)))}
+function cycleFor(d){let p=[...state.periods].sort().filter(x=>date(x)<=d);return p.length?p[p.length-1]:null}
+function selectGroup(id){$(id).querySelectorAll('.chip').forEach(c=>c.onclick=()=>{$(id).querySelectorAll('.chip').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');selected[id]={value:c.dataset.v}})}
+['flow','mood','breast','pain','appetite','sleep','discharge'].forEach(selectGroup);
+$('logDate').valueAsDate=new Date();
+function saveDay(){let d=$('logDate').value;if(!d)return;let rec={};for(const k in selected)rec[k]=selected[k]?.value??null;rec.note=$('note').value;state.days[d]=rec;save();render();alert('День сохранён.')}
+function savePeriod(){let d=$('logDate').value;if(!d)return;if(!state.periods.includes(d))state.periods.push(d);state.periods.sort();save();render();alert('Начало месячных сохранено.')}
+function tab(id,btn){['today','log','stats','history'].forEach(x=>$(x).classList.add('hidden'));$(id).classList.remove('hidden');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');render()}
+function render(){let p=[...state.periods].sort(), ls=lengths(), av=avg(ls), today=new Date();today.setHours(12,0,0,0),last=cycleFor(today);
+$('avg').textContent=ls.length?av+' дн.':'—';$('cycleDay').textContent=last?(days(date(last),today)+1)+'':'—';
+if(last){let next=new Date(date(last));next.setDate(next.getDate()+av);let diff=days(today,next);$('next').textContent=fmt(next);$('nextInfo').textContent=diff>0?'примерно через '+diff+' дн.':diff===0?'ожидаются сегодня':'задержка около '+Math.abs(diff)+' дн.';
+let ov=new Date(next);ov.setDate(ov.getDate()-14);let os=new Date(ov);os.setDate(os.getDate()-5);let oe=new Date(ov);oe.setDate(oe.getDate()+1);$('ovulation').textContent=fmt(os)+'–'+fmt(oe);$('status').innerHTML=`Сегодня примерно <b>${days(date(last),today)+1}-й день</b> цикла. Прогноз рассчитан по средней длине ${av} дней.`;timeline(days(date(last),today)+1,av)}
+else{$('next').textContent='—';$('nextInfo').textContent='Добавьте первый день месячных';$('ovulation').textContent='—';$('status').textContent='Нет данных о текущем цикле.'}
+signals(ls,av);charts(ls);flowSummary();symptoms();history()}
+function timeline(cd,av){$('timeline').innerHTML='';for(let i=1;i<=Math.max(av,28);i++){let x=document.createElement('div');x.className='day';if(i<=5)x.classList.add('period');if(i>=av-7&&i<av)x.classList.add('pms');if(i>=av-19&&i<=av-13)x.classList.add('ov');if(i===cd)x.classList.add('today');$('timeline').appendChild(x)}}
+function signals(ls,av){let h='';if(ls.length>=3){let recent=ls.slice(-3),rmin=Math.min(...recent),rmax=Math.max(...recent),global=avg(ls);if(rmax-rmin>=7)h+='<div class="alert bad">Последние циклы заметно различаются по длине: '+rmin+'–'+rmax+' дней.</div>';if(Math.abs(recent[recent.length-1]-global)>=7)h+='<div class="alert">Последний цикл отличается от вашей средней длины на '+Math.abs(recent[recent.length-1]-global)+' дней.</div>';if(!h)h='<div class="alert good">Последовательность последних циклов пока без выраженного сигнала о резком изменении.</div>'}else h='<div class="alert notice">Для более надёжного анализа нужно накопить несколько циклов.</div>';$('signals').innerHTML=h}
+function charts(ls){let a=ls.slice(-12),max=Math.max(...a,30);$('lengthChart').innerHTML=a.length?a.map((v,i)=>`<div class="barwrap"><div class="barval">${v}</div><div class="bar" style="height:${Math.max(4,v/max*135)}px"></div><div class="barlabel">${i+1}</div></div>`).join(''):'<div class="muted">Пока недостаточно данных.</div>'}
+function flowSummary(){let vals=Object.values(state.days).map(x=>Number(x.flow)).filter(x=>x>=0);$('flowSummary').innerHTML=vals.length?`Записано дней кровотечения: <b>${vals.length}</b>. Средняя интенсивность: <b>${(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1)}</b> из 4.`:'Нет записей.'}
+function symptoms(){let ds=Object.values(state.days),names={mood:'настроение',breast:'грудь',pain:'боли',appetite:'аппетит',sleep:'сон',discharge:'выделения'},h='';for(const [k,n] of Object.entries(names)){let nrec=ds.filter(x=>x[k]!==null&&x[k]!==undefined);if(nrec.length)h+=`<p><b>${n}</b>: ${nrec.length} записей</p>`}$('symptomSummary').innerHTML=h||'<div class="muted">Пока нет записей о симптомах.</div>'}
+function history(){let p=[...state.periods].sort(),ls=lengths();if(!p.length){$('historyBox').innerHTML='<div class="muted">История пуста.</div>';return}let rows=p.map((x,i)=>`<tr><td>${fmt(date(x))}</td><td>${i?ls[i-1]+' дн.':'—'}</td></tr>`).join('');$('historyBox').innerHTML='<table class="history"><tr><th>Начало</th><th>Длина цикла</th></tr>'+rows+'</table>'}
+function clearAll(){if(confirm('Удалить всю историю и симптомы?')){state={periods:[],days:{}};save();render()}}
+render();
+</script></body></html>
