@@ -1,38 +1,63 @@
 <!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#b85c7a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Мой цикл">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
-<meta name="theme-color" content="#b85c7a"><title>Мой цикл</title>
+<title>Мой цикл</title>
 <style>
-:root{--bg:#f7f5f2;--card:#fff;--ink:#252321;--muted:#77716b;--accent:#b85c7a;--soft:#f4dfe7;--line:#e8e2dc;--warn:#a56b31;--bad:#a94b4b;--good:#4f7659}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:900px;margin:auto;padding:24px 16px 60px}h1{font-size:30px;margin:0}h2{font-size:19px;margin:0 0 14px}.sub,.muted,.small{color:var(--muted)}.sub{margin:3px 0 20px}
+:root{--bg:#f7f5f2;--card:#fff;--ink:#252321;--muted:#77716b;--accent:#b85c7a;--soft:#f4dfe7;--line:#e8e2dc;--warn:#a56b31;--bad:#a94b4b;--good:#4f7659;--green:#c9dcae;--lav:#eee8f7}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:900px;margin:auto;padding:24px 16px 60px}
+h1{font-size:30px;margin:0}h2{font-size:19px;margin:0 0 14px}.sub,.muted,.small{color:var(--muted)}.sub{margin:3px 0 18px}
 nav{display:flex;gap:7px;overflow:auto;margin-bottom:16px}nav button{white-space:nowrap;background:#eee9e5;color:var(--ink);margin:0}nav button.active{background:var(--accent);color:#fff}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:17px;margin-bottom:14px}.hero{background:linear-gradient(135deg,#f4dfe7,#fff);border:0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.big{font-size:26px;font-weight:750}.pill{display:inline-block;padding:6px 10px;border-radius:99px;background:var(--soft);font-size:13px;margin-top:7px}
-label{display:block;font-weight:600;margin:10px 0 6px}input,select,button,textarea{font:inherit}input[type=date],input[type=number],select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}button{border:0;border-radius:10px;padding:10px 14px;background:var(--accent);color:#fff;font-weight:650;cursor:pointer;margin-top:10px}.secondary{background:#eee9e5;color:var(--ink)}.dangerbtn{background:#eee;color:var(--bad)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:17px;margin-bottom:14px}.hero{background:linear-gradient(135deg,#f4dfe7,#fff);border:0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.big{font-size:26px;font-weight:750}.pill{display:inline-block;padding:6px 10px;border-radius:99px;background:var(--soft);font-size:13px;margin-top:7px}
+label{display:block;font-weight:600;margin:10px 0 6px}input,select,button,textarea{font:inherit}input[type=date],input[type=number],select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}
+button{border:0;border-radius:10px;padding:10px 14px;background:var(--accent);color:#fff;font-weight:650;cursor:pointer;margin-top:10px}.secondary{background:#eee9e5;color:var(--ink)}.dangerbtn{background:#eee;color:var(--bad)}
 .row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.chips{display:flex;gap:7px;flex-wrap:wrap}.chip{border:1px solid var(--line);padding:8px 10px;border-radius:12px;background:#fff;cursor:pointer}.chip.sel{background:var(--soft);border-color:#dca5b8}
-.alert{padding:12px;border-radius:12px;background:#fff1dd;margin-top:10px}.bad{background:#fae4e4}.good{background:#e7f1e9}.notice{background:#f0edf8}.timeline{display:flex;gap:4px;margin:13px 0}.day{height:28px;flex:1;border-radius:7px;background:#eee}.period{background:#d9829e}.pms{background:#e8c5d2}.ov{background:#c9dcae}.today{outline:2px solid var(--ink);outline-offset:1px}
-.chart{height:190px;display:flex;align-items:end;gap:7px;border-bottom:1px solid var(--line);padding:8px 2px 0}.barwrap{flex:1;height:100%;display:flex;flex-direction:column;justify-content:end;align-items:center}.bar{width:75%;max-width:34px;border-radius:7px 7px 0 0;background:var(--accent);min-height:3px}.barlabel{font-size:10px;color:var(--muted);margin-top:5px}.barval{font-size:10px;margin-bottom:3px}.hidden{display:none}.history{width:100%;border-collapse:collapse}.history td,.history th{text-align:left;padding:8px;border-bottom:1px solid var(--line);font-size:13px}
-@media(max-width:680px){.grid{grid-template-columns:1fr 1fr}.grid .card:last-child{grid-column:1/-1}main{padding:18px 12px 50px}.chart{height:160px}}
+.alert{padding:12px;border-radius:12px;background:#fff1dd;margin-top:10px}.bad{background:#fae4e4}.good{background:#e7f1e9}.notice{background:#f0edf8}
+.timeline{display:flex;gap:4px;margin:13px 0}.day{height:28px;flex:1;border-radius:7px;background:#eee}.period{background:#d9829e}.pms{background:#e8c5d2}.ov{background:#c9dcae}.today{outline:2px solid var(--ink);outline-offset:1px}
+.chart{height:190px;display:flex;align-items:end;gap:7px;border-bottom:1px solid var(--line);padding:8px 2px 0}.barwrap{flex:1;height:100%;display:flex;flex-direction:column;justify-content:end;align-items:center}.bar{width:75%;max-width:34px;border-radius:7px 7px 0 0;background:var(--accent);min-height:3px}.barlabel{font-size:10px;color:var(--muted);margin-top:5px}.barval{font-size:10px;margin-bottom:3px}
+.hidden{display:none}.history{width:100%;border-collapse:collapse}.history td,.history th{text-align:left;padding:8px;border-bottom:1px solid var(--line);font-size:13px}
+.quick{display:flex;justify-content:space-between;align-items:center;gap:12px}.quick button{margin:0}.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.metric{padding:12px;border:1px solid var(--line);border-radius:12px}.metric b{display:block;font-size:18px;margin-top:3px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px}.calendar-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.cal-dow,.cal-day{text-align:center}.cal-dow{font-size:11px;color:var(--muted);padding:3px}.cal-day{min-height:40px;padding:6px 2px;border-radius:8px;background:#faf9f7;font-size:12px}.cal-day.empty{background:transparent}.cal-day.period{background:#e8b2c3}.cal-day.pms{background:#f0dce4}.cal-day.ov{background:#dce9cb}.cal-day.logged{box-shadow:inset 0 -3px 0 #77716b}.cal-day.today{outline:2px solid var(--ink);outline-offset:-1px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);background:#252321;color:#fff;padding:11px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:.2s;z-index:10}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:680px){.grid{grid-template-columns:1fr 1fr}.grid .card:last-child{grid-column:1/-1}main{padding:18px 12px 50px}.chart{height:160px}.quick{align-items:flex-start;flex-direction:column}.quick button{width:100%}}
 </style>
 </head>
 <body><main>
 <header><h1>Мой цикл</h1><div class="sub">Личный трекер. Данные хранятся только на этом устройстве.</div></header>
-<nav><button class="active" onclick="tab('today',this)">Сегодня</button><button onclick="tab('log',this)">Запись</button><button onclick="tab('stats',this)">Статистика</button><button onclick="tab('history',this)">История</button><button onclick="tab('data',this)">Данные</button></nav>
+<nav>
+<button class="active" onclick="tab('today',this)">Сегодня</button>
+<button onclick="tab('log',this)">Запись</button>
+<button onclick="tab('stats',this)">Статистика</button>
+<button onclick="tab('history',this)">История</button>
+<button onclick="tab('data',this)">Данные</button>
+</nav>
 
 <section id="today">
-<div class="card hero"><div class="muted">Следующие месячные</div><div class="big" id="next">—</div><div id="nextInfo" class="pill">Добавьте дату последнего начала</div></div>
-<div class="grid"><div class="card"><div class="muted">День цикла</div><div class="big" id="cycleDay">—</div></div><div class="card"><div class="muted">Средняя длина</div><div class="big" id="avg">—</div></div><div class="card"><div class="muted">Овуляторное окно</div><div class="big" id="ovulation">—</div></div></div>
-<div class="card"><h2>Текущий цикл</h2><div id="status"></div><div class="timeline" id="timeline"></div></div>
+<div class="card hero">
+  <div class="quick"><div><div class="muted">Следующие месячные</div><div class="big" id="next">—</div><div id="nextInfo" class="pill">Добавьте дату последнего начала</div></div><button onclick="openTodayLog()">＋ Записать сегодня</button></div>
+</div>
+<div class="grid">
+  <div class="card"><div class="muted">День цикла</div><div class="big" id="cycleDay">—</div></div>
+  <div class="card"><div class="muted">Ваша обычная длина</div><div class="big" id="avg">—</div></div>
+  <div class="card"><div class="muted">Овуляторное окно</div><div class="big" id="ovulation">—</div></div>
+</div>
+<div class="card"><h2>Что происходит сейчас</h2><div id="status"></div><div class="timeline" id="timeline"></div><div class="legend"><span><i class="dot" style="background:#d9829e"></i>месячные</span><span><i class="dot" style="background:#e8c5d2"></i>PMS</span><span><i class="dot" style="background:#c9dcae"></i>фертильное окно</span></div></div>
+<div class="card"><h2>Последние записи</h2><div id="recent"></div></div>
 <div class="card"><h2>Сигналы</h2><div id="signals"></div></div>
+<div class="card"><h2>Календарь</h2><div class="calendar-head"><button class="secondary" onclick="changeMonth(-1)">‹</button><b id="calTitle"></b><button class="secondary" onclick="changeMonth(1)">›</button></div><div class="calendar-grid" id="calendar"></div></div>
 </section>
 
 <section id="log" class="hidden">
-<div class="card"><h2>Добавить день</h2><label>Дата</label><input id="logDate" type="date"><label>Кровотечение</label><div class="chips" id="flow"><span class="chip" data-v="0">Нет</span><span class="chip" data-v="1">Лёгкое</span><span class="chip" data-v="2">Среднее</span><span class="chip" data-v="3">Сильное</span><span class="chip" data-v="4">Очень сильное</span></div>
+<div class="card"><h2>Добавить день</h2>
+<label>Дата</label><input id="logDate" type="date">
+<label>Кровотечение</label><div class="chips" id="flow"><span class="chip" data-v="0">Нет</span><span class="chip" data-v="1">Лёгкое</span><span class="chip" data-v="2">Среднее</span><span class="chip" data-v="3">Сильное</span><span class="chip" data-v="4">Очень сильное</span></div>
 <label>Настроение</label><div class="chips" id="mood"><span class="chip" data-v="1">Плохое</span><span class="chip" data-v="2">Ниже обычного</span><span class="chip" data-v="3">Обычное</span><span class="chip" data-v="4">Хорошее</span><span class="chip" data-v="5">Отличное</span></div>
 <label>Грудь</label><div class="chips" id="breast"><span class="chip" data-v="0">Нет</span><span class="chip" data-v="1">Чувствительность</span><span class="chip" data-v="2">Боль</span></div>
 <label>Боли</label><div class="chips" id="pain"><span class="chip" data-v="0">Нет</span><span class="chip" data-v="1">Слабые</span><span class="chip" data-v="2">Средние</span><span class="chip" data-v="3">Сильные</span></div>
@@ -41,89 +66,212 @@ label{display:block;font-weight:600;margin:10px 0 6px}input,select,button,textar
 <label>Выделения</label><div class="chips" id="discharge"><span class="chip" data-v="0">Нет особенностей</span><span class="chip" data-v="1">Сухо</span><span class="chip" data-v="2">Кремовые</span><span class="chip" data-v="3">Прозрачные/скользкие</span><span class="chip" data-v="4">Другие</span></div>
 <label>Комментарий</label><textarea id="note" rows="3" placeholder="Например: сильная усталость, тяга к сладкому..."></textarea>
 <div class="row"><button onclick="saveDay()">Сохранить день</button><button class="secondary" onclick="savePeriod()">Отметить первый день месячных</button></div>
-</div>
-</section>
+</div></section>
 
 <section id="stats" class="hidden">
 <div class="card"><h2>Длина циклов — последние 12</h2><div id="lengthChart" class="chart"></div><div class="small">График строится по фактически внесённым датам начала месячных.</div></div>
-<div class="card"><h2>Кровотечение</h2><div id="flowSummary"></div></div>
+<div class="card"><h2>Ваш базовый цикл</h2><div id="baseline"></div></div>
 <div class="card"><h2>Паттерны симптомов</h2><div id="symptomSummary"></div></div>
+<div class="card"><h2>Кровотечение</h2><div id="flowSummary"></div></div>
+<div class="card"><h2>Записи по дням цикла</h2><div id="phaseSummary"></div></div>
 </section>
 
 <section id="history" class="hidden">
 <div class="card"><h2>История циклов</h2><div id="historyBox"></div><button class="dangerbtn" onclick="clearAll()">Удалить все данные</button></div>
 </section>
+
 <section id="data" class="hidden">
-<div class="card"><h2>Резервная копия</h2>
-<p class="small">Экспорт сохраняет историю циклов и дневник симптомов в файл на твоём устройстве.</p>
-<button onclick="exportData()">Экспортировать данные</button>
-<label class="secondary" style="display:inline-block;padding:10px 14px;border-radius:10px;cursor:pointer;margin-left:8px">Импортировать данные
-<input type="file" accept=".json,application/json" hidden onchange="importData(event)"></label>
-</div>
-<div class="card"><h2>Приватность</h2><p class="small">Данные хранятся локально в этом браузере/PWA и не отправляются приложением на сервер.</p>
-<button class="dangerbtn" onclick="clearAll()">Удалить все данные</button></div>
-</section></main>
+<div class="card"><h2>Резервная копия</h2><p class="small">Экспорт сохраняет историю циклов и дневник симптомов в файл на твоём устройстве.</p><button onclick="exportData()">Экспортировать данные</button>
+<label class="secondary" style="display:inline-block;padding:10px 14px;border-radius:10px;cursor:pointer;margin-left:8px">Импортировать данные<input type="file" accept=".json,application/json" hidden onchange="importData(event)"></label></div>
+<div class="card"><h2>Приватность</h2><p class="small">Данные хранятся локально в этом браузере/PWA и не отправляются приложением на сервер.</p><button class="dangerbtn" onclick="clearAll()">Удалить все данные</button></div>
+</section>
+</main><div id="toast" class="toast"></div>
+
 <script>
-const K='cycleTracker_v2';let state=JSON.parse(localStorage.getItem(K)||'{"periods":[],"days":{}}');let selected={flow:null,mood:null,breast:null,pain:null,appetite:null,sleep:null,discharge:null};
-const $=id=>document.getElementById(id);function save(){localStorage.setItem(K,JSON.stringify(state))}
-function date(s){return new Date(s+'T12:00:00')}function iso(d){return d.toISOString().slice(0,10)}function days(a,b){return Math.round((b-a)/86400000)}function fmt(d){return d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}
+const K='cycleTracker_v2';
+let state=JSON.parse(localStorage.getItem(K)||'{"periods":[],"days":{}}');
+let selected={flow:null,mood:null,breast:null,pain:null,appetite:null,sleep:null,discharge:null};
+let calCursor=new Date(); calCursor.setDate(1);
+
+const $=id=>document.getElementById(id);
+function save(){localStorage.setItem(K,JSON.stringify(state))}
+function date(s){return new Date(s+'T12:00:00')}
+function iso(d){return d.toISOString().slice(0,10)}
+function days(a,b){return Math.round((b-a)/86400000)}
+function fmt(d){return d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}
+function fmtShort(d){return d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'})}
 function avg(a){return a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):28}
-function lengths(){let p=[...state.periods].sort();return p.slice(1).map((x,i)=>days(date(p[i]),date(x)))}
-function cycleFor(d){let p=[...state.periods].sort().filter(x=>date(x)<=d);return p.length?p[p.length-1]:null}
-function selectGroup(id){$(id).querySelectorAll('.chip').forEach(c=>c.onclick=()=>{$(id).querySelectorAll('.chip').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');selected[id]={value:c.dataset.v}})}
-['flow','mood','breast','pain','appetite','sleep','discharge'].forEach(selectGroup);
-$('logDate').valueAsDate=new Date();
-function saveDay(){
- let d=$('logDate').value;if(!d)return;
- let rec={};
- for(const k in selected)rec[k]=selected[k]?.value??null;
- rec.note=$('note').value;
- state.days[d]=rec;save();render();
- alert('Запись сохранена');
- const btn=document.querySelector('nav button');
- if(btn)tab('today',btn);
-}
-function savePeriod(){let d=$('logDate').value;if(!d)return;if(!state.periods.includes(d))state.periods.push(d);state.periods.sort();save();render();alert('Начало месячных сохранено.')}
+function sortedPeriods(){return [...new Set(state.periods)].sort()}
+function lengths(){let p=sortedPeriods();return p.slice(1).map((x,i)=>days(date(p[i]),date(x)))}
+function cycleFor(d){let p=sortedPeriods().filter(x=>date(x)<=d);return p.length?p[p.length-1]:null}
+function cycleDayFor(d){let start=cycleFor(d);return start?days(date(start),d)+1:null}
+function predictedNext(){let p=sortedPeriods(),ls=lengths();if(!p.length)return null;let av=avg(ls),n=date(p[p.length-1]);n.setDate(n.getDate()+av);return n}
+function sd(a){if(a.length<2)return 0;let m=a.reduce((x,y)=>x+y,0)/a.length;return Math.sqrt(a.reduce((s,x)=>s+(x-m)**2,0)/(a.length-1))}
+function median(a){if(!a.length)return 0;let x=[...a].sort((a,b)=>a-b),m=Math.floor(x.length/2);return x.length%2?x[m]:(x[m-1]+x[m])/2}
+function showToast(msg){let t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600)}
 function tab(id,btn){['today','log','stats','history','data'].forEach(x=>$(x).classList.add('hidden'));$(id).classList.remove('hidden');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');render()}
-function render(){let p=[...state.periods].sort(), ls=lengths(), av=avg(ls), today=new Date();today.setHours(12,0,0,0),last=cycleFor(today);
-$('avg').textContent=ls.length?av+' дн.':'—';$('cycleDay').textContent=last?(days(date(last),today)+1)+'':'—';
-if(last){let next=new Date(date(last));next.setDate(next.getDate()+av);let diff=days(today,next);$('next').textContent=fmt(next);$('nextInfo').textContent=diff>0?'примерно через '+diff+' дн.':diff===0?'ожидаются сегодня':'задержка около '+Math.abs(diff)+' дн.';
-let ov=new Date(next);ov.setDate(ov.getDate()-14);let os=new Date(ov);os.setDate(os.getDate()-5);let oe=new Date(ov);oe.setDate(oe.getDate()+1);$('ovulation').textContent=fmt(os)+'–'+fmt(oe);$('status').innerHTML=`Сегодня примерно <b>${days(date(last),today)+1}-й день</b> цикла. Прогноз рассчитан по средней длине ${av} дней.`;timeline(days(date(last),today)+1,av)}
-else{$('next').textContent='—';$('nextInfo').textContent='Добавьте первый день месячных';$('ovulation').textContent='—';$('status').textContent='Нет данных о текущем цикле.'}
-signals(ls,av);charts(ls);flowSummary();symptoms();history()}
-function timeline(cd,av){$('timeline').innerHTML='';for(let i=1;i<=Math.max(av,28);i++){let x=document.createElement('div');x.className='day';if(i<=5)x.classList.add('period');if(i>=av-7&&i<av)x.classList.add('pms');if(i>=av-19&&i<=av-13)x.classList.add('ov');if(i===cd)x.classList.add('today');$('timeline').appendChild(x)}}
-function signals(ls,av){let h='';if(ls.length>=3){let recent=ls.slice(-3),rmin=Math.min(...recent),rmax=Math.max(...recent),global=avg(ls);if(rmax-rmin>=7)h+='<div class="alert bad">Последние циклы заметно различаются по длине: '+rmin+'–'+rmax+' дней.</div>';if(Math.abs(recent[recent.length-1]-global)>=7)h+='<div class="alert">Последний цикл отличается от вашей средней длины на '+Math.abs(recent[recent.length-1]-global)+' дней.</div>';if(!h)h='<div class="alert good">Последовательность последних циклов пока без выраженного сигнала о резком изменении.</div>'}else h='<div class="alert notice">Для более надёжного анализа нужно накопить несколько циклов.</div>';$('signals').innerHTML=h}
-function charts(ls){let a=ls.slice(-12),max=Math.max(...a,30);$('lengthChart').innerHTML=a.length?a.map((v,i)=>`<div class="barwrap"><div class="barval">${v}</div><div class="bar" style="height:${Math.max(4,v/max*135)}px"></div><div class="barlabel">${i+1}</div></div>`).join(''):'<div class="muted">Пока недостаточно данных.</div>'}
-function flowSummary(){let vals=Object.values(state.days).map(x=>Number(x.flow)).filter(x=>x>=0);$('flowSummary').innerHTML=vals.length?`Записано дней кровотечения: <b>${vals.length}</b>. Средняя интенсивность: <b>${(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1)}</b> из 4.`:'Нет записей.'}
-function symptoms(){let ds=Object.values(state.days),names={mood:'настроение',breast:'грудь',pain:'боли',appetite:'аппетит',sleep:'сон',discharge:'выделения'},h='';for(const [k,n] of Object.entries(names)){let nrec=ds.filter(x=>x[k]!==null&&x[k]!==undefined);if(nrec.length)h+=`<p><b>${n}</b>: ${nrec.length} записей</p>`}$('symptomSummary').innerHTML=h||'<div class="muted">Пока нет записей о симптомах.</div>'}
-function history(){let p=[...state.periods].sort(),ls=lengths();if(!p.length){$('historyBox').innerHTML='<div class="muted">История пуста.</div>';return}let rows=p.map((x,i)=>`<tr><td>${fmt(date(x))}</td><td>${i?ls[i-1]+' дн.':'—'}</td></tr>`).join('');$('historyBox').innerHTML='<table class="history"><tr><th>Начало</th><th>Длина цикла</th></tr>'+rows+'</table>'}
+function openTodayLog(){let b=document.querySelectorAll('nav button')[1];$('logDate').value=iso(new Date());loadDay($('logDate').value);tab('log',b)}
+function selectGroup(id){$(id).querySelectorAll('.chip').forEach(c=>c.onclick=()=>{$(id).querySelectorAll('.chip').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');selected[id]=c.dataset.v})}
+['flow','mood','breast','pain','appetite','sleep','discharge'].forEach(selectGroup);
+$('logDate').value=iso(new Date());
+$('logDate').addEventListener('change',e=>loadDay(e.target.value));
+
+function loadDay(d){
+  let rec=state.days[d]||{};
+  ['flow','mood','breast','pain','appetite','sleep','discharge'].forEach(k=>{
+    selected[k]=rec[k]??null;
+    $(k).querySelectorAll('.chip').forEach(c=>c.classList.toggle('sel',String(c.dataset.v)===String(selected[k])));
+  });
+  $('note').value=rec.note||'';
+}
+function saveDay(){
+  let d=$('logDate').value;if(!d)return;
+  let rec={};for(const k in selected)rec[k]=selected[k];
+  rec.note=$('note').value.trim();
+  state.days[d]=rec;save();render();showToast('Запись сохранена');
+  setTimeout(()=>{let b=document.querySelector('nav button');tab('today',b)},500);
+}
+function savePeriod(){
+  let d=$('logDate').value;if(!d)return;
+  if(!state.periods.includes(d))state.periods.push(d);
+  state.periods.sort();save();render();showToast('Начало месячных сохранено');
+  setTimeout(()=>{let b=document.querySelector('nav button');tab('today',b)},500);
+}
+
+function render(){
+  let p=sortedPeriods(),ls=lengths(),av=avg(ls),today=new Date();today.setHours(12,0,0,0),last=cycleFor(today);
+  $('avg').textContent=ls.length?av+' дн.':'—';
+  $('cycleDay').textContent=last?(days(date(last),today)+1):'—';
+  if(last){
+    let next=new Date(date(last));next.setDate(next.getDate()+av);
+    let diff=days(today,next);
+    $('next').textContent=fmt(next);
+    $('nextInfo').textContent=diff>0?'примерно через '+diff+' дн.':diff===0?'ориентировочно сегодня':'отклонение от прогноза около '+Math.abs(diff)+' дн.';
+    let ov=new Date(next);ov.setDate(ov.getDate()-14);let os=new Date(ov);os.setDate(os.getDate()-5);let oe=new Date(ov);oe.setDate(oe.getDate()+1);
+    $('ovulation').textContent=fmtShort(os)+'–'+fmtShort(oe);
+    $('status').innerHTML=statusText(days(date(last),today)+1,av,next);
+    timeline(days(date(last),today)+1,av);
+  }else{$('next').textContent='—';$('nextInfo').textContent='Добавьте первый день месячных';$('ovulation').textContent='—';$('status').textContent='Нет данных о текущем цикле.';$('timeline').innerHTML=''}
+  signals(ls,av);recentEntries();calendar();charts(ls);baseline(ls);symptoms();flowSummary();phaseSummary();history();
+}
+function statusText(cd,av,next){
+  let pmsStart=Math.max(1,av-6),pmsEnd=Math.max(1,av-1),ov=Math.max(1,av-14);
+  if(cd<=5)return 'Сейчас ориентировочно <b>первые дни цикла</b>.';
+  if(cd>=pmsStart&&cd<=pmsEnd)return 'Сейчас ориентировочно <b>предменструальное окно</b> — '+(pmsEnd-cd+1)+' дн. до расчётной даты.';
+  if(cd>=ov-5&&cd<=ov+1)return 'Сейчас ориентировочно <b>фертильное окно</b>. Расчёт основан только на длине цикла.';
+  if(next&&days(new Date(),next)<0)return 'Расчётная дата следующей менструации уже прошла; прогноз следует воспринимать как ориентир.';
+  return 'Сейчас примерно <b>'+cd+'-й день</b> цикла.';
+}
+function timeline(cd,av){$('timeline').innerHTML='';for(let i=1;i<=Math.max(av,28);i++){let x=document.createElement('div');x.className='day';if(i<=5)x.classList.add('period');if(i>=Math.max(1,av-6)&&i<av)x.classList.add('pms');if(i>=Math.max(1,av-19)&&i<=av-13)x.classList.add('ov');if(i===cd)x.classList.add('today');$('timeline').appendChild(x)}}
+function signals(ls,av){
+  let h='';
+  if(ls.length>=3){
+    let recent=ls.slice(-3),m=median(ls),spread=Math.max(...recent)-Math.min(...recent),last=ls[ls.length-1],z=sd(ls);
+    if(spread>=7)h+='<div class="alert bad">Последние 3 цикла отличаются по длине на '+spread+' дней ('+Math.min(...recent)+'–'+Math.max(...recent)+').</div>';
+    if(Math.abs(last-m)>=Math.max(5,Math.round(z||0)))h+='<div class="alert">Последний завершённый цикл отличается от вашей медианы ('+m+' дней) на '+Math.abs(last-m)+' дней.</div>';
+    if(!h)h='<div class="alert good">По накопленным данным выраженного изменения длины цикла не видно.</div>';
+  }else h='<div class="alert notice">Для персонального анализа длины нужно минимум 3 завершённых цикла.</div>';
+  $('signals').innerHTML=h;
+}
+function recentEntries(){
+  let entries=Object.entries(state.days).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,5);
+  if(!entries.length){$('recent').innerHTML='<div class="muted">Пока нет дневных записей.</div>';return}
+  const labels={flow:['нет','лёгкое','среднее','сильное','очень сильное'],mood:['','плохое','ниже обычного','обычное','хорошее','отличное'],pain:['нет','слабые','средние','сильные']};
+  $('recent').innerHTML=entries.map(([d,r])=>{
+    let bits=[];if(r.flow!=null)bits.push('кровотечение: '+labels.flow[Number(r.flow)]);
+    if(r.mood!=null)bits.push('настроение: '+labels.mood[Number(r.mood)]);
+    if(r.pain!=null)bits.push('боль: '+labels.pain[Number(r.pain)]);
+    if(r.appetite==='3')bits.push('аппетит выше обычного');
+    if(r.sleep==='1')bits.push('сон хуже обычного');
+    return '<p><b>'+fmt(date(d))+'</b> — '+(bits.join(', ')||'есть запись')+'</p>';
+  }).join('');
+}
+function charts(ls){let a=ls.slice(-12),max=Math.max(...a,30);$('lengthChart').innerHTML=a.length?a.map((v,i)=>'<div class="barwrap"><div class="barval">'+v+'</div><div class="bar" style="height:'+Math.max(4,v/max*135)+'px"></div><div class="barlabel">'+(i+1)+'</div></div>').join(''):'<div class="muted">Пока недостаточно данных.</div>'}
+function baseline(ls){
+  if(ls.length<3){$('baseline').innerHTML='<div class="alert notice">Пока мало данных для персонального базового диапазона. После 3+ циклов здесь появятся медиана и типичный разброс.</div>';return}
+  let med=median(ls),s=sd(ls),lo=Math.max(1,Math.round(med-s)),hi=Math.round(med+s);
+  $('baseline').innerHTML='<div class="metrics"><div class="metric"><span class="muted">Медиана</span><b>'+med+' дней</b></div><div class="metric"><span class="muted">Типичный диапазон</span><b>'+lo+'–'+hi+' дней</b></div></div><p class="small">Диапазон рассчитывается по вашим завершённым циклам, а не по универсальной норме.</p>';
+}
+function symptoms(){
+  let ds=Object.entries(state.days),names={mood:'настроение',breast:'грудь',pain:'боли',appetite:'аппетит',sleep:'сон',discharge:'выделения'},h='';
+  for(const [k,n] of Object.entries(names)){
+    let rec=ds.filter(([,x])=>x[k]!==null&&x[k]!==undefined&&x[k]!=='');
+    if(!rec.length)continue;
+    let notable=rec.filter(([,x])=>['pain','breast'].includes(k)?Number(x[k])>=2:(k==='appetite'?x[k]==='3':(k==='sleep'?x[k]==='1':false))).length;
+    h+='<p><b>'+n+'</b>: '+rec.length+' записей'+(notable?' · выраженный сигнал в '+notable+' из них':'')+'</p>';
+  }
+  if(sortedPeriods().length>=3){
+    let p=sortedPeriods(), av=avg(lengths()), windowDays=[];
+    for(let i=0;i<p.length;i++){
+      let start=date(p[i]),next=i<p.length-1?date(p[i+1]):null;
+      if(!next)continue;
+      let end=next;for(let [d,r] of Object.entries(state.days)){let dd=date(d);let cd=days(start,dd)+1;if(cd>=Math.max(1,av-6)&&cd<av&&dd>=start&&dd<end)windowDays.push(r)}
+    }
+    let total=windowDays.length;
+    if(total){
+      let appetite=windowDays.filter(r=>r.appetite==='3').length,pain=windowDays.filter(r=>Number(r.pain)>=2).length,sleep=windowDays.filter(r=>r.sleep==='1').length,breast=windowDays.filter(r=>Number(r.breast)>=2).length;
+      let signals=[['повышенный аппетит',appetite],['боль',pain],['ухудшение сна',sleep],['боль/выраженная чувствительность груди',breast]].filter(x=>x[1]);
+      if(signals.length){h+='<div class="alert notice"><b>Предменструальный паттерн:</b> в отмеченных PMS-днях чаще всего встречались '+signals.sort((a,b)=>b[1]-a[1]).map(x=>x[0]+' ('+x[1]+')').join(', ')+'.</div>'}
+    }
+  }
+  $('symptomSummary').innerHTML=h||'<div class="muted">Пока нет записей о симптомах.</div>';
+}
+function flowSummary(){
+  let vals=Object.values(state.days).map(x=>Number(x.flow)).filter(x=>Number.isFinite(x)&&x>=0);
+  $('flowSummary').innerHTML=vals.length?'<div class="metrics"><div class="metric"><span class="muted">Дней отмечено</span><b>'+vals.length+'</b></div><div class="metric"><span class="muted">Средняя интенсивность</span><b>'+((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1))+' / 4</b></div></div>':'<div class="muted">Нет записей.</div>';
+}
+function phaseSummary(){
+  let p=sortedPeriods(),av=avg(lengths()),buckets=[0,0,0,0],labels=['месячные','фолликулярная фаза','фертильное окно','PMS'];
+  for(const [d,r] of Object.entries(state.days)){let cd=cycleDayFor(date(d));if(!cd)continue;let idx=cd<=5?0:(cd>=Math.max(1,av-19)&&cd<=av-13?2:(cd>=Math.max(1,av-6)&&cd<av?3:1));if(r.note||r.mood!=null||r.pain!=null||r.appetite!=null||r.sleep!=null||r.breast!=null||r.discharge!=null)buckets[idx]++}
+  $('phaseSummary').innerHTML=buckets.map((n,i)=>'<p><b>'+labels[i]+'</b>: '+n+' дневных записей</p>').join('');
+}
+function history(){
+  let p=sortedPeriods(),ls=lengths();
+  if(!p.length){$('historyBox').innerHTML='<div class="muted">История пуста.</div>';return}
+  let rows=p.map((x,i)=>'<tr><td>'+fmt(date(x))+'</td><td>'+ (i?ls[i-1]+' дн.':'—')+'</td></tr>').join('');
+  $('historyBox').innerHTML='<table class="history"><tr><th>Начало</th><th>Длина цикла</th></tr>'+rows+'</table>';
+}
+function calendar(){
+  let y=calCursor.getFullYear(),m=calCursor.getMonth(),first=new Date(y,m,1),last=new Date(y,m+1,0),start=(first.getDay()+6)%7;
+  $('calTitle').textContent=first.toLocaleDateString('ru-RU',{month:'long',year:'numeric'});
+  let out=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(x=>'<div class="cal-dow">'+x+'</div>').join('');
+  for(let i=0;i<start;i++)out+='<div class="cal-day empty"></div>';
+  let p=sortedPeriods(),av=avg(lengths()),today=iso(new Date());
+  for(let n=1;n<=last.getDate();n++){
+    let d=new Date(y,m,n),s=iso(d),cd=cycleDayFor(d),cls='cal-day';
+    if(state.days[s])cls+=' logged';
+    if(p.includes(s)|| (cd&&cd<=5))cls+=' period';
+    else if(cd&&cd>=Math.max(1,av-6)&&cd<av)cls+=' pms';
+    else if(cd&&cd>=Math.max(1,av-19)&&cd<=av-13)cls+=' ov';
+    if(s===today)cls+=' today';
+    out+='<div class="'+cls+'">'+n+'</div>';
+  }
+  $('calendar').innerHTML=out;
+}
+function changeMonth(n){calCursor.setMonth(calCursor.getMonth()+n);calendar()}
 function exportData(){
- try{
-  const payload={app:"Мой цикл",version:3,exportedAt:new Date().toISOString(),data:state};
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json;charset=utf-8"});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;a.download="my-cycle-backup-"+new Date().toISOString().slice(0,10)+".json";
-  document.body.appendChild(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
- }catch(e){alert("Не удалось создать резервную копию.");}
+  try{
+    const payload={app:"Мой цикл",version:6,exportedAt:new Date().toISOString(),data:state};
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json;charset=utf-8"});
+    const url=URL.createObjectURL(blob),a=document.createElement("a");
+    a.href=url;a.download="my-cycle-backup-"+new Date().toISOString().slice(0,10)+".json";
+    document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    showToast('Резервная копия создана');
+  }catch(e){alert("Не удалось создать резервную копию.")}
 }
 function importData(ev){
- const file=ev.target.files&&ev.target.files[0];if(!file)return;
- const r=new FileReader();
- r.onload=()=>{
-  try{
-   const payload=JSON.parse(r.result), incoming=payload.data||payload;
-   if(!Array.isArray(incoming.periods)||typeof incoming.days!=="object")throw 0;
-   if(confirm("Заменить текущие данные данными из резервной копии?")){
-    state=incoming;save();render();alert("Данные восстановлены");
-   }
-  }catch(e){alert("Не удалось прочитать резервную копию.");}
-  ev.target.value="";
- };
- r.readAsText(file);
+  const file=ev.target.files&&ev.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const payload=JSON.parse(r.result),incoming=payload.data||payload;
+      if(!Array.isArray(incoming.periods)||typeof incoming.days!=="object")throw 0;
+      if(confirm("Заменить текущие данные данными из резервной копии?")){state=incoming;save();render();showToast('Данные восстановлены')}
+    }catch(e){alert("Не удалось прочитать резервную копию.")}
+    ev.target.value="";
+  };r.readAsText(file);
 }
-function clearAll(){if(confirm('Удалить всю историю и симптомы?')){state={periods:[],days:{}};save();render()}}
+function clearAll(){if(confirm('Удалить всю историю и симптомы?')){state={periods:[],days:{}};save();render();showToast('Данные удалены')}}
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"));
 render();
 </script></body></html>
