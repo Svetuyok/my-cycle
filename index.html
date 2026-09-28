@@ -69,7 +69,7 @@ button{border:0;border-radius:10px;padding:10px 14px;background:var(--accent);co
 </div></section>
 
 <section id="stats" class="hidden">
-<div class="card"><h2>Длина циклов — последние 12</h2><div id="lengthChart" class="chart"></div><div class="small">График строится по фактически внесённым датам начала месячных.</div></div>
+<div class="card"><h2>Длина циклов — последние 12</h2><div id="lengthChart" class="chart"></div><div class="small">Учитываются только интервалы 20–45 дней. Длинные интервалы без записей исключаются, чтобы не искажать картину.</div></div>
 <div class="card"><h2>Ваш базовый цикл</h2><div id="baseline"></div></div>
 <div class="card"><h2>Паттерны симптомов</h2><div id="symptomSummary"></div></div>
 <div class="card"><h2>Кровотечение</h2><div id="flowSummary"></div></div>
@@ -102,12 +102,14 @@ function iso(d){return d.toISOString().slice(0,10)}
 function days(a,b){return Math.round((b-a)/86400000)}
 function fmt(d){return d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}
 function fmtShort(d){return d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'})}
-function avg(a){return a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):28}
+const BASELINE=26, NORMAL_MIN=25, NORMAL_MAX=27, MAX_VALID_GAP=45;
+function avg(a){return a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):BASELINE}
 function sortedPeriods(){return [...new Set(state.periods)].sort()}
-function lengths(){let p=sortedPeriods();return p.slice(1).map((x,i)=>days(date(p[i]),date(x)))}
+function rawLengths(){let p=sortedPeriods();return p.slice(1).map((x,i)=>({start:p[i],end:x,length:days(date(p[i]),date(x))}))}
+function lengths(){return rawLengths().filter(x=>x.length>=20&&x.length<=MAX_VALID_GAP).map(x=>x.length)}
 function cycleFor(d){let p=sortedPeriods().filter(x=>date(x)<=d);return p.length?p[p.length-1]:null}
 function cycleDayFor(d){let start=cycleFor(d);return start?days(date(start),d)+1:null}
-function predictedNext(){let p=sortedPeriods(),ls=lengths();if(!p.length)return null;let av=avg(ls),n=date(p[p.length-1]);n.setDate(n.getDate()+av);return n}
+function predictedNext(){let p=sortedPeriods();if(!p.length)return null;let n=date(p[p.length-1]);n.setDate(n.getDate()+BASELINE);return n}
 function sd(a){if(a.length<2)return 0;let m=a.reduce((x,y)=>x+y,0)/a.length;return Math.sqrt(a.reduce((s,x)=>s+(x-m)**2,0)/(a.length-1))}
 function median(a){if(!a.length)return 0;let x=[...a].sort((a,b)=>a-b),m=Math.floor(x.length/2);return x.length%2?x[m]:(x[m-1]+x[m])/2}
 function showToast(msg){let t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600)}
@@ -141,8 +143,8 @@ function savePeriod(){
 }
 
 function render(){
-  let p=sortedPeriods(),ls=lengths(),av=avg(ls),today=new Date();today.setHours(12,0,0,0),last=cycleFor(today);
-  $('avg').textContent=ls.length?av+' дн.':'—';
+  let p=sortedPeriods(),ls=lengths(),av=BASELINE,today=new Date();today.setHours(12,0,0,0),last=cycleFor(today);
+  $('avg').textContent=BASELINE+' дн.';
   $('cycleDay').textContent=last?(days(date(last),today)+1):'—';
   if(last){
     let next=new Date(date(last));next.setDate(next.getDate()+av);
@@ -166,13 +168,15 @@ function statusText(cd,av,next){
 }
 function timeline(cd,av){$('timeline').innerHTML='';for(let i=1;i<=Math.max(av,28);i++){let x=document.createElement('div');x.className='day';if(i<=5)x.classList.add('period');if(i>=Math.max(1,av-6)&&i<av)x.classList.add('pms');if(i>=Math.max(1,av-19)&&i<=av-13)x.classList.add('ov');if(i===cd)x.classList.add('today');$('timeline').appendChild(x)}}
 function signals(ls,av){
-  let h='';
-  if(ls.length>=3){
-    let recent=ls.slice(-3),m=median(ls),spread=Math.max(...recent)-Math.min(...recent),last=ls[ls.length-1],z=sd(ls);
-    if(spread>=7)h+='<div class="alert bad">Последние 3 цикла отличаются по длине на '+spread+' дней ('+Math.min(...recent)+'–'+Math.max(...recent)+').</div>';
-    if(Math.abs(last-m)>=Math.max(5,Math.round(z||0)))h+='<div class="alert">Последний завершённый цикл отличается от вашей медианы ('+m+' дней) на '+Math.abs(last-m)+' дней.</div>';
-    if(!h)h='<div class="alert good">По накопленным данным выраженного изменения длины цикла не видно.</div>';
-  }else h='<div class="alert notice">Для персонального анализа длины нужно минимум 3 завершённых цикла.</div>';
+  let h='', raw=rawLengths(), valid=raw.filter(x=>x.length>=20&&x.length<=MAX_VALID_GAP), ignored=raw.filter(x=>x.length>MAX_VALID_GAP);
+  if(!sortedPeriods().length){$('signals').innerHTML='<div class="alert notice">Добавьте даты начала месячных, чтобы получать сигналы.</div>';return}
+  if(ignored.length) h+='<div class="alert notice">Исторические интервалы длиннее '+MAX_VALID_GAP+' дней исключены из расчёта: вероятнее всего, это периоды без записей, а не реальные циклы.</div>';
+  if(valid.length){
+    let last=valid[valid.length-1].length;
+    if(last>=NORMAL_MIN&&last<=NORMAL_MAX) h+='<div class="alert good">Последний учтённый цикл ('+last+' дней) попадает в твой обычный диапазон 25–27 дней.</div>';
+    else if(last<NORMAL_MIN) h+='<div class="alert">Последний учтённый цикл — '+last+' дней, то есть короче твоего обычного диапазона 25–27 дней.</div>';
+    else h+='<div class="alert">Последний учтённый цикл — '+last+' дней, то есть длиннее твоего обычного диапазона 25–27 дней.</div>';
+  } else h+='<div class="alert notice">Пока нет завершённых циклов, которые можно корректно сравнить с твоей базой.</div>';
   $('signals').innerHTML=h;
 }
 function recentEntries(){
@@ -190,9 +194,10 @@ function recentEntries(){
 }
 function charts(ls){let a=ls.slice(-12),max=Math.max(...a,30);$('lengthChart').innerHTML=a.length?a.map((v,i)=>'<div class="barwrap"><div class="barval">'+v+'</div><div class="bar" style="height:'+Math.max(4,v/max*135)+'px"></div><div class="barlabel">'+(i+1)+'</div></div>').join(''):'<div class="muted">Пока недостаточно данных.</div>'}
 function baseline(ls){
-  if(ls.length<3){$('baseline').innerHTML='<div class="alert notice">Пока мало данных для персонального базового диапазона. После 3+ циклов здесь появятся медиана и типичный разброс.</div>';return}
-  let med=median(ls),s=sd(ls),lo=Math.max(1,Math.round(med-s)),hi=Math.round(med+s);
-  $('baseline').innerHTML='<div class="metrics"><div class="metric"><span class="muted">Медиана</span><b>'+med+' дней</b></div><div class="metric"><span class="muted">Типичный диапазон</span><b>'+lo+'–'+hi+' дней</b></div></div><p class="small">Диапазон рассчитывается по вашим завершённым циклам, а не по универсальной норме.</p>';
+  let raw=rawLengths(), ignored=raw.filter(x=>x.length>MAX_VALID_GAP);
+  $('baseline').innerHTML='<div class="metrics"><div class="metric"><span class="muted">Твоя базовая длина</span><b>26 дней</b></div><div class="metric"><span class="muted">Обычный диапазон</span><b>25–27 дней</b></div></div>'+
+    '<p class="small">Для прогноза используется заданная тобой индивидуальная база 25–27 дней. Интервалы длиннее '+MAX_VALID_GAP+' дней считаются возможными пропусками ведения данных и не участвуют в расчёте статистики.'+
+    (ignored.length?' Исключено таких интервалов: '+ignored.length+'.':'')+'</p>';
 }
 function symptoms(){
   let ds=Object.entries(state.days),names={mood:'настроение',breast:'грудь',pain:'боли',appetite:'аппетит',sleep:'сон',discharge:'выделения'},h='';
@@ -223,7 +228,7 @@ function flowSummary(){
   $('flowSummary').innerHTML=vals.length?'<div class="metrics"><div class="metric"><span class="muted">Дней отмечено вручную</span><b>'+vals.length+'</b></div><div class="metric"><span class="muted">Средняя интенсивность</span><b>'+((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1))+' / 4</b></div></div>'+(imported.length?'<p>Из Apple Health: '+imported.length+' менструальных эпизодов, средняя длительность '+(imported.reduce((a,b)=>a+b,0)/imported.length).toFixed(1)+' дн.</p>':''):(imported.length?'<p>Из Apple Health: '+imported.length+' менструальных эпизодов, средняя длительность '+(imported.reduce((a,b)=>a+b,0)/imported.length).toFixed(1)+' дн.</p>':'<div class="muted">Нет записей.</div>');
 }
 function phaseSummary(){
-  let p=sortedPeriods(),av=avg(lengths()),buckets=[0,0,0,0],labels=['месячные','фолликулярная фаза','фертильное окно','PMS'];
+  let p=sortedPeriods(),av=BASELINE,buckets=[0,0,0,0],labels=['месячные','фолликулярная фаза','фертильное окно','PMS'];
   for(const [d,r] of Object.entries(state.days)){let cd=cycleDayFor(date(d));if(!cd)continue;let idx=cd<=5?0:(cd>=Math.max(1,av-19)&&cd<=av-13?2:(cd>=Math.max(1,av-6)&&cd<av?3:1));if(r.note||r.mood!=null||r.pain!=null||r.appetite!=null||r.sleep!=null||r.breast!=null||r.discharge!=null)buckets[idx]++}
   $('phaseSummary').innerHTML=buckets.map((n,i)=>'<p><b>'+labels[i]+'</b>: '+n+' дневных записей</p>').join('');
 }
@@ -238,7 +243,7 @@ function calendar(){
   $('calTitle').textContent=first.toLocaleDateString('ru-RU',{month:'long',year:'numeric'});
   let out=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(x=>'<div class="cal-dow">'+x+'</div>').join('');
   for(let i=0;i<start;i++)out+='<div class="cal-day empty"></div>';
-  let p=sortedPeriods(),av=avg(lengths()),today=iso(new Date());
+  let p=sortedPeriods(),av=BASELINE,today=iso(new Date());
   for(let n=1;n<=last.getDate();n++){
     let d=new Date(y,m,n),s=iso(d),cd=cycleDayFor(d),cls='cal-day';
     if(state.days[s])cls+=' logged';
